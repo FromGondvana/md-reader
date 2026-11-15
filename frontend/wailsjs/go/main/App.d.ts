@@ -24,6 +24,8 @@ export function ReadFileBase64(arg1:string,arg2:string):Promise<string>;
 
 export function RenameEntry(arg1:string,arg2:string,arg3:string):Promise<void>;
 
+export function ReplaceInFiles(arg1:string,arg2:string,arg3:string,arg4:Array<string>,arg5:boolean):Promise<number>;
+
 export function SaveSettings(arg1:string):Promise<void>;
 
 export function SearchAll(arg1:string,arg2:string):Promise<main.SearchAllResult>;

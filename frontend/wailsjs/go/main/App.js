@@ -46,6 +46,10 @@ export function RenameEntry(arg1, arg2, arg3) {
   return window['go']['main']['App']['RenameEntry'](arg1, arg2, arg3);
 }
 
+export function ReplaceInFiles(arg1, arg2, arg3, arg4, arg5) {
+  return window['go']['main']['App']['ReplaceInFiles'](arg1, arg2, arg3, arg4, arg5);
+}
+
 export function SaveSettings(arg1) {
   return window['go']['main']['App']['SaveSettings'](arg1);
 }

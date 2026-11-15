@@ -198,6 +198,59 @@
     text-align: center;
 }
 
+/* ---------- строка замены в поиске ---------- */
+
+.srch-replace-row {
+    border-bottom: none;
+    padding-top: 9px;
+    font-size: 12.5px;
+}
+
+.srch-replace-row svg {
+    width: 14px;
+    height: 14px;
+}
+
+.srch-replace-row input[type="text"] {
+    font-size: 13px;
+}
+
+.srch-case {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11.5px;
+    color: var(--text-faint);
+    cursor: pointer;
+    flex: none;
+    user-select: none;
+}
+
+.srch-case input {
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.srch-replace-btn {
+    flex: none;
+    height: 26px;
+    padding: 0 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elev);
+    color: var(--text-dim);
+    border-radius: 7px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.srch-replace-btn:hover {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
 /* ---------- диалоги (подтверждение / ввод имени) ---------- */
 
 .dialog-overlay {
@@ -418,6 +471,60 @@
     font-size: 11px;
     color: var(--text-faint);
     font-style: italic;
+}
+
+/* ---------- выбор каталогов в форме маски ---------- */
+
+.dialog-dirs {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 5px;
+    background: var(--bg);
+}
+
+.dir-check {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 8px;
+    padding-left: calc(8px + var(--d, 0) * 16px);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    white-space: nowrap;
+}
+
+.dir-check:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.dir-check input {
+    accent-color: var(--accent);
+    flex: none;
+    cursor: pointer;
+}
+
+.dir-check svg {
+    width: 13px;
+    height: 13px;
+    flex: none;
+    color: var(--text-faint);
+}
+
+.dir-check span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dirs-empty {
+    padding: 14px;
+    color: var(--text-faint);
+    font-size: 12px;
+    text-align: center;
 }
 
 /* бейдж «недавно» и звезда в палитре файлов */

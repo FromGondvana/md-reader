@@ -44,7 +44,12 @@ export function currentSort(): SortMode {
 export function treeOptsJson(): string {
     const m = activeMask();
     if (m) {
-        return JSON.stringify({ include: m.include, exclude: m.exclude, sort: m.sort ?? "name" });
+        return JSON.stringify({
+            include: m.include,
+            exclude: m.exclude,
+            dirs: m.dirs ?? [],
+            sort: m.sort ?? "name",
+        });
     }
     const sort = currentSort();
     return sort === "name" ? "" : JSON.stringify({ sort });

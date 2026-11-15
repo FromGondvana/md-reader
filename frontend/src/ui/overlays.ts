@@ -7,6 +7,7 @@ import { icons } from "./icons";
 import { escHtml } from "./util";
 import { toast } from "./toast";
 import { closeMasks } from "./masks";
+import { askConfirm } from "./ask";
 
 /* ================= Ctrl+P — быстрый переход к файлу ================= */
 
@@ -196,6 +197,12 @@ function buildSearch(): void {
                 <input type="text" placeholder="Что искать по всем файлам проекта…"/>
                 <span class="palette-count"></span>
             </div>
+            <div class="palette-input-row srch-replace-row">
+                ${icons.pencil}
+                <input type="text" class="srch-replace" placeholder="Заменить найденное на… (необязательно)"/>
+                <label class="srch-case" title="Учитывать регистр"><input type="checkbox" class="srch-case-chk"/>Аа</label>
+                <button type="button" class="srch-replace-btn">Заменить всё</button>
+            </div>
             <div class="palette-list"></div>
             <div class="palette-hints">
                 <span><kbd>Enter</kbd> первое совпадение</span>
@@ -203,9 +210,16 @@ function buildSearch(): void {
             </div>
         </div>`;
     document.getElementById("overlay-root")!.append(srchRoot);
-    srchInput = srchRoot.querySelector("input")!;
+    srchInput = srchRoot.querySelector(".palette-input-row input")!;
     srchList = srchRoot.querySelector(".palette-list")!;
     srchCount = srchRoot.querySelector(".palette-count")!;
+
+    const replaceInput = srchRoot.querySelector<HTMLInputElement>(".srch-replace")!;
+    const caseChk = srchRoot.querySelector<HTMLInputElement>(".srch-case-chk")!;
+    const replaceBtn = srchRoot.querySelector<HTMLButtonElement>(".srch-replace-btn")!;
+    replaceBtn.addEventListener("click", () =>
+        void replaceAll(replaceInput.value, caseChk.checked),
+    );
 
     srchRoot.addEventListener("mousedown", (e) => {
         if (e.target === srchRoot) closeSearch();
@@ -222,17 +236,56 @@ function buildSearch(): void {
     });
 }
 
+let lastSearchRes: SearchAllResult | null = null;
+
+/** Заменяет найденное по всем файлам из последних результатов поиска. */
+async function replaceAll(replacement: string, caseSensitive: boolean): Promise<void> {
+    if (!state.root) return;
+    const res = lastSearchRes;
+    if (!res || !res.files.length) {
+        toast("Сначала найдите совпадения", "info");
+        return;
+    }
+    const q = srchInput.value.trim();
+    if (!q) return;
+    const ok = await askConfirm({
+        title: `Заменить ${res.total} совпадений в ${res.fileCount} файлах?`,
+        text:
+            `«${q}» → «${replacement || "(пусто)"}»` +
+            (res.truncated ? " · Показаны не все файлы — при необходимости повторите замену." : ""),
+        okLabel: "Заменить",
+        danger: true,
+    });
+    if (!ok) return;
+    try {
+        const n = await go().ReplaceInFiles(
+            state.root,
+            q,
+            replacement,
+            res.files.map((f) => f.path),
+            caseSensitive,
+        );
+        toast(`Заменено совпадений: ${n}`);
+        window.setTimeout(() => void doSearch(srchInput.value), 350);
+    } catch (e) {
+        toast(errMsg(e));
+    }
+}
+
 async function doSearch(q: string): Promise<void> {
     if (!state.root) return;
     if (!q.trim()) {
+        lastSearchRes = null;
         renderSearch(null);
         return;
     }
     srchCount.textContent = "…";
     try {
         const res = await go().SearchAll(state.root, q);
+        lastSearchRes = res;
         renderSearch(res, q.trim());
     } catch (e) {
+        lastSearchRes = null;
         renderSearch(null);
         toast(errMsg(e));
     }

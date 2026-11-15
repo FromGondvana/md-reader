@@ -76,6 +76,9 @@ func buildTree(node *FileNode, dir string, opts *TreeOptions) {
 				if matchAny(opts.Exclude, rel) {
 					continue
 				}
+				if len(opts.Dirs) > 0 && !underAnyDir(opts.Dirs, rel) {
+					continue
+				}
 				if len(opts.Include) > 0 && !matchAny(opts.Include, rel) {
 					continue
 				}

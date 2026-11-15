@@ -1,6 +1,6 @@
 import { errMsg } from "../api";
 import { activeMask, saveSettings, state } from "../state";
-import type { Mask, SortMode } from "../types";
+import type { FileNode, Mask, SortMode } from "../types";
 import { icons } from "./icons";
 import { escAttr, escHtml } from "./util";
 import { toast } from "./toast";
@@ -123,7 +123,11 @@ function renderList(): void {
     list.innerHTML = "";
     for (const m of all) {
         const isActive = active?.name === m.name;
-        const rules = [...m.include.map((r) => `+ ${r}`), ...m.exclude.map((r) => `− ${r}`)];
+        const rules = [
+            ...(m.dirs ?? []).map((d) => `⊕ ${d || "корень"}`),
+            ...m.include.map((r) => `+ ${r}`),
+            ...m.exclude.map((r) => `− ${r}`),
+        ];
         const el = document.createElement("div");
         el.className = `mask-item${isActive ? " active" : ""}`;
         el.innerHTML =
@@ -176,8 +180,8 @@ async function removeMask(m: Mask): Promise<void> {
 async function editMask(m: Mask | null): Promise<void> {
     const isNew = m === null;
     const draft: Mask = m
-        ? { ...m, include: [...m.include], exclude: [...m.exclude] }
-        : { name: "", include: [], exclude: [], sort: "name" };
+        ? { ...m, include: [...m.include], exclude: [...m.exclude], dirs: [...(m.dirs ?? [])] }
+        : { name: "", dirs: [], include: [], exclude: [], sort: "name" };
 
     const form = document.createElement("div");
     form.className = "overlay dialog-overlay";
@@ -186,10 +190,12 @@ async function editMask(m: Mask | null): Promise<void> {
         `<div class="dialog-title">${isNew ? "Новая маска" : "Изменить маску"}</div>` +
         `<label class="dialog-label">Название</label>` +
         `<input type="text" class="dialog-input" data-field="name" value="${escAttr(draft.name)}" placeholder="Например: Только документация" spellcheck="false"/>` +
-        `<label class="dialog-label">Показывать (включения, по одному на строку)</label>` +
-        `<textarea class="dialog-textarea" data-field="include" spellcheck="false" placeholder="docs/**&#10;README.md">${escHtml(draft.include.join("\n"))}</textarea>` +
+        `<label class="dialog-label">Выбранные каталоги (показывать только их; пусто — все)</label>` +
+        `<div class="dialog-dirs" data-field="dirs"></div>` +
         `<label class="dialog-label">Скрывать (исключения, по одному на строку)</label>` +
         `<textarea class="dialog-textarea" data-field="exclude" spellcheck="false" placeholder="drafts&#10;*.tmp.md">${escHtml(draft.exclude.join("\n"))}</textarea>` +
+        `<label class="dialog-label">Доп. включения glob (по одному на строку; необязательно)</label>` +
+        `<textarea class="dialog-textarea" data-field="include" spellcheck="false" placeholder="README.md&#10;docs/**">${escHtml(draft.include.join("\n"))}</textarea>` +
         `<label class="dialog-label">Сортировка</label>` +
         `<select class="dialog-select" data-field="sort">` +
         Object.entries(SORT_LABELS)
@@ -202,6 +208,9 @@ async function editMask(m: Mask | null): Promise<void> {
         `</div></div>`;
     document.getElementById("overlay-root")!.append(form);
     requestAnimationFrame(() => form.classList.add("open"));
+
+    // список каталогов проекта чекбоксами
+    buildDirPicker(form.querySelector('[data-field="dirs"]')!, draft.dirs);
 
     const closeForm = (): void => {
         form.classList.remove("open");
@@ -226,14 +235,17 @@ async function editMask(m: Mask | null): Promise<void> {
                 .split("\n")
                 .map((x) => x.trim())
                 .filter(Boolean);
+        const dirs = [...form.querySelectorAll<HTMLInputElement>('.dialog-dirs input:checked')]
+            .map((x) => x.value);
         const mask: Mask = {
             name,
+            dirs,
             include: lines('[data-field="include"]'),
             exclude: lines('[data-field="exclude"]'),
             sort: (form.querySelector('[data-field="sort"]') as HTMLSelectElement).value as SortMode,
         };
-        if (!mask.include.length && !mask.exclude.length) {
-            toast("Добавьте хотя бы одно правило");
+        if (!mask.include.length && !mask.exclude.length && !mask.dirs.length) {
+            toast("Добавьте хотя бы одно правило или выберите каталоги");
             return;
         }
         const s = state.settings!;
@@ -259,4 +271,49 @@ async function editMask(m: Mask | null): Promise<void> {
     };
     form.querySelector('[data-act="ok"]')?.addEventListener("click", () => void save());
     form.querySelector('[data-act="cancel"]')?.addEventListener("click", closeForm);
+}
+
+/* ---------- выбор каталогов чекбоксами ---------- */
+
+interface DirItem {
+    path: string;
+    name: string;
+    depth: number;
+}
+
+/** Собирает все папки проекта из дерева. */
+function collectDirs(): DirItem[] {
+    const out: DirItem[] = [];
+    const walk = (n: FileNode, depth: number): void => {
+        for (const c of n.children ?? []) {
+            if (c.isDir) {
+                out.push({ path: c.path, name: c.name, depth });
+                walk(c, depth + 1);
+            }
+        }
+    };
+    if (state.tree) walk(state.tree, 0);
+    return out;
+}
+
+/** Чекбоксы «какие каталоги оставить». */
+function buildDirPicker(host: HTMLElement, selected: string[]): void {
+    const dirs = collectDirs();
+    if (!dirs.length) {
+        host.innerHTML = `<div class="dirs-empty">В проекте пока нет папок с файлами</div>`;
+        return;
+    }
+    const sel = new Set(selected);
+    const rows: string[] = [
+        `<label class="dir-check" style="--d:0"><input type="checkbox" value="" ${sel.has("") ? "checked" : ""}/>` +
+            `${icons.folder}<span>файлы в корне проекта</span></label>`,
+    ];
+    for (const d of dirs) {
+        rows.push(
+            `<label class="dir-check" style="--d:${d.depth + 1}" title="${escAttr(d.path)}">` +
+                `<input type="checkbox" value="${escAttr(d.path)}" ${sel.has(d.path) ? "checked" : ""}/>` +
+                `${icons.folder}<span>${escHtml(d.name)}</span></label>`,
+        );
+    }
+    host.innerHTML = rows.join("");
 }

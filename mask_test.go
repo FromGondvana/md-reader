@@ -72,4 +72,29 @@ func TestParseTreeOptions(t *testing.T) {
 	if o == nil || len(o.Exclude) != 1 || o.Sort != "modified" {
 		t.Errorf("опции разобраны неверно: %+v", o)
 	}
+	o = parseTreeOptions(`{"dirs":["docs",""]}`)
+	if o == nil || len(o.Dirs) != 2 {
+		t.Errorf("dirs не разобраны: %+v", o)
+	}
+}
+
+func TestUnderAnyDir(t *testing.T) {
+	dirs := []string{"docs", "guide/sub", ""}
+	cases := []struct {
+		rel  string
+		want bool
+	}{
+		{"README.md", true},       // "" — корень
+		{"docs/a.md", true},       // docs
+		{"docs/sub/b.md", true},   // вложено в docs
+		{"docsx/a.md", false},     // префикс, но не каталог
+		{"guide/sub/x.md", true},  // вложенный выбранный каталог
+		{"guide/other.md", false}, // родитель выбранного — не показывается
+		{"notes/idea.md", false},  // не выбран
+	}
+	for _, c := range cases {
+		if got := underAnyDir(dirs, c.rel); got != c.want {
+			t.Errorf("underAnyDir(dirs, %q) = %v, want %v", c.rel, got, c.want)
+		}
+	}
 }

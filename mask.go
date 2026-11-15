@@ -14,6 +14,9 @@ type TreeOptions struct {
 	// Exclude — путь/имя под правило не попадает; папка отсекается
 	// вместе с поддеревом.
 	Exclude []string `json:"exclude"`
+	// Dirs — если непусто, показываются только файлы в выбранных
+	// каталогах ("" означает файлы в корне проекта).
+	Dirs []string `json:"dirs"`
 	// Sort: "name" (по умолчанию), "name-desc", "modified".
 	Sort string `json:"sort"`
 }
@@ -27,10 +30,28 @@ func parseTreeOptions(raw string) *TreeOptions {
 	if err := json.Unmarshal([]byte(raw), &opts); err != nil {
 		return nil
 	}
-	if len(opts.Include) == 0 && len(opts.Exclude) == 0 && opts.Sort == "" {
+	if len(opts.Include) == 0 && len(opts.Exclude) == 0 && len(opts.Dirs) == 0 && opts.Sort == "" {
 		return nil
 	}
 	return &opts
+}
+
+// underAnyDir — файл в одном из выбранных каталогов? ("" — корень проекта)
+func underAnyDir(dirs []string, rel string) bool {
+	for _, d := range dirs {
+		d = strings.Trim(d, "/")
+		if d == "" {
+			// корень: файлы без вложенности
+			if !strings.Contains(rel, "/") {
+				return true
+			}
+			continue
+		}
+		if rel == d || strings.HasPrefix(rel, d+"/") {
+			return true
+		}
+	}
+	return false
 }
 
 // matchAny — совпадает ли путь хотя бы с одним правилом.

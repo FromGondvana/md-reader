@@ -18,6 +18,8 @@ export type SortMode = "name" | "name-desc" | "modified";
  */
 export interface Mask {
     name: string;
+    /** выбранные каталоги: показывать только файлы в них ("" — файлы в корне) */
+    dirs: string[];
     /** пусто = показывать всё (кроме exclude) */
     include: string[];
     exclude: string[];

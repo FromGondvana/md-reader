@@ -23,6 +23,14 @@ interface GoApp {
     DeleteEntry(root: string, rel: string): Promise<void>;
     // ---- экспорт ----
     ExportHTML(fileName: string, html: string): Promise<string>;
+    // ---- поиск с заменой ----
+    ReplaceInFiles(
+        root: string,
+        query: string,
+        replacement: string,
+        files: string[],
+        caseSensitive: boolean,
+    ): Promise<number>;
 }
 
 declare global {

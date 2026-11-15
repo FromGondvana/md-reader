@@ -12,6 +12,7 @@ import {
 import { defaultKeymap, history, historyKeymap, indentWithTab } from "@codemirror/commands";
 import { markdown } from "@codemirror/lang-markdown";
 import { HighlightStyle, syntaxHighlighting } from "@codemirror/language";
+import { search, searchKeymap, highlightSelectionMatches } from "@codemirror/search";
 import { tags } from "@lezer/highlight";
 import { go, errMsg } from "../api";
 import { state } from "../state";
@@ -127,10 +128,13 @@ export async function enterEditor(): Promise<void> {
                 rectangularSelection(),
                 EditorView.lineWrapping,
                 markdown(),
+                search({ top: true }),
+                highlightSelectionMatches(),
                 syntaxHighlighting(mdHighlight),
                 editorTheme,
                 keymap.of([
                     { key: "Mod-s", preventDefault: true, run: () => (void saveEditor(), true) },
+                    ...searchKeymap,
                     ...defaultKeymap,
                     ...historyKeymap,
                     indentWithTab,
