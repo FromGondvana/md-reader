@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>MD Reader</title>
+</head>
+<body>
+<div id="app">
+    <header id="topbar">
+        <button id="btn-back" class="icon-btn" title="Назад (Alt+←)" disabled></button>
+        <button id="btn-fwd" class="icon-btn" title="Вперёд (Alt+→)" disabled></button>
+        <button id="btn-open-folder" title="Открыть папку проекта">
+            <span id="project-icon"></span><span id="project-name">Открыть папку…</span>
+        </button>
+        <div id="breadcrumb"></div>
+        <div class="tb-spacer"></div>
+        <button id="btn-palette" class="tb-action" title="Быстрый переход к файлу (Ctrl+P)"></button>
+        <button id="btn-search" class="tb-action" title="Поиск по всем файлам (Ctrl+Shift+F)"></button>
+        <button id="btn-tree" class="icon-btn" title="Дерево файлов (Ctrl+B)"></button>
+        <button id="btn-toc" class="icon-btn" title="Оглавление"></button>
+        <button id="btn-theme" class="icon-btn" title="Тема"></button>
+    </header>
+    <div id="main">
+        <aside id="sidebar">
+            <div id="tree"></div>
+        </aside>
+        <div id="divider"></div>
+        <main id="content">
+            <div id="welcome" class="hidden"></div>
+            <article id="reader"></article>
+        </main>
+        <aside id="toc-panel" class="hidden">
+            <div id="toc-title">На этой странице</div>
+            <nav id="toc"></nav>
+        </aside>
+    </div>
+</div>
+<div id="overlay-root"></div>
+<div id="toast-root"></div>
+<script src="./src/main.ts" type="module"></script>
+</body>
+</html>

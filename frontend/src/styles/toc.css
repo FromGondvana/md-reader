@@ -1,0 +1,41 @@
+.toc-item {
+    display: block;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-size: 12.5px;
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    line-height: 1.45;
+}
+
+.toc-item:hover {
+    color: var(--text);
+    background: var(--bg-hover);
+    text-decoration: none;
+}
+
+.toc-item.active {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--accent-soft);
+    font-weight: 500;
+}
+
+.toc-h1 {
+    padding-left: 6px;
+    font-weight: 600;
+}
+
+.toc-h2 {
+    padding-left: 10px;
+}
+
+.toc-h3 {
+    padding-left: 24px;
+}
+
+.toc-h4 {
+    padding-left: 38px;
+    font-size: 12px;
+}

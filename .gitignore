@@ -1,0 +1,12 @@
+# Сборка
+build/bin/
+*.exe
+
+# Зависимости и артефакты
+node_modules/
+frontend/dist/
+frontend/package.json.md5
+
+# Локальные файлы сессий/среды
+.zcode/
+.DS_Store

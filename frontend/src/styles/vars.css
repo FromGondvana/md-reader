@@ -1,0 +1,81 @@
+:root {
+    --font-ui: "Inter", -apple-system, "Segoe UI", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+    --bg: #ffffff;
+    --bg-bar: #fcfcfd;
+    --bg-side: #f7f7f9;
+    --bg-elev: #ffffff;
+    --bg-hover: #f0f1f3;
+    --bg-active: #e9ebee;
+    --bg-code: #f6f8fa;
+    --bg-mark: rgba(255, 223, 93, 0.55);
+
+    --text: #24292f;
+    --text-dim: #57606a;
+    --text-faint: #8b949e;
+
+    --border: #e4e6ea;
+    --border-strong: #d0d4da;
+
+    --accent: #2f6feb;
+    --accent-soft: rgba(47, 111, 235, 0.1);
+
+    --inline-code: #cf222e;
+    --danger: #e5534b;
+
+    /* подсветка синтаксиса (светлая, в духе GitHub) */
+    --code-keyword: #cf222e;
+    --code-string: #0a3069;
+    --code-number: #0550ae;
+    --code-comment: #6e7781;
+    --code-title: #8250df;
+    --code-type: #953800;
+    --code-tag: #116329;
+    --code-attr: #0550ae;
+    --code-builtin: #e16f24;
+    --code-meta: #0550ae;
+
+    --shadow-lg: 0 12px 40px rgba(9, 13, 20, 0.18), 0 2px 8px rgba(9, 13, 20, 0.08);
+
+    --radius: 10px;
+    --topbar-h: 48px;
+    --sidebar-w: 280px;
+}
+
+html[data-theme="dark"] {
+    --bg: #16181d;
+    --bg-bar: #131519;
+    --bg-side: #131519;
+    --bg-elev: #1e2128;
+    --bg-hover: #1d2027;
+    --bg-active: #262a33;
+    --bg-code: #1a1d23;
+    --bg-mark: rgba(187, 128, 9, 0.45);
+
+    --text: #d9dee6;
+    --text-dim: #97a0ad;
+    --text-faint: #666f7c;
+
+    --border: #262a33;
+    --border-strong: #353b47;
+
+    --accent: #58a6ff;
+    --accent-soft: rgba(88, 166, 255, 0.13);
+
+    --inline-code: #ff7b72;
+    --danger: #f85149;
+
+    --code-keyword: #ff7b72;
+    --code-string: #a5d6ff;
+    --code-number: #79c0ff;
+    --code-comment: #8b949e;
+    --code-title: #d2a8ff;
+    --code-type: #ffa657;
+    --code-tag: #7ee787;
+    --code-attr: #79c0ff;
+    --code-builtin: #ffa657;
+    --code-meta: #79c0ff;
+
+    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.4);
+}

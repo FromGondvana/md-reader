@@ -1,0 +1,79 @@
+#tree {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 6px 24px;
+}
+
+.tree-empty {
+    color: var(--text-faint);
+    font-size: 12.5px;
+    text-align: center;
+    padding: 32px 12px;
+}
+
+.tree-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding-left: calc(8px + var(--d, 0) * 14px);
+    padding-right: 8px;
+    border-radius: 7px;
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.tree-row:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.tree-row svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+}
+
+.tree-row .tree-chev {
+    display: inline-flex;
+    width: 14px;
+    height: 14px;
+    flex: none;
+    transition: transform 0.12s ease;
+    color: var(--text-faint);
+}
+
+.tree-row .tree-chev svg {
+    width: 14px;
+    height: 14px;
+}
+
+.tree-row.open .tree-chev {
+    transform: rotate(90deg);
+}
+
+.tree-row.dir .tree-name {
+    font-weight: 500;
+}
+
+.tree-row.file svg {
+    color: var(--text-faint);
+}
+
+.tree-row.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.tree-row.active svg,
+.tree-row.active .tree-name {
+    color: var(--accent);
+}
+
+.tree-row .tree-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
