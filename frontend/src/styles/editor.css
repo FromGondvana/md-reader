@@ -1,0 +1,109 @@
+/* ---------- редактор (CodeMirror) ---------- */
+
+#content.editing {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#content.editing #reader,
+#content.editing #welcome {
+    display: none;
+}
+
+#editor-root {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+#editor-root.hidden {
+    display: none;
+}
+
+/* ---------- тулбар редактора ---------- */
+
+#editor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 42px;
+    flex: none;
+    padding: 0 12px;
+    background: var(--bg-bar);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+}
+
+.etb-group {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.etb-btn {
+    height: 28px;
+    min-width: 28px;
+    padding: 0 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    border-radius: 6px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.etb-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.etb-btn span {
+    margin-left: 4px;
+}
+
+.etb-save {
+    display: inline-flex;
+    align-items: center;
+    color: var(--accent);
+}
+
+.etb-save svg {
+    width: 14px;
+    height: 14px;
+}
+
+.etb-sep {
+    width: 1px;
+    height: 18px;
+    background: var(--border-strong);
+    margin: 0 5px;
+    flex: none;
+}
+
+.etb-dirty {
+    font-size: 11px;
+    color: var(--danger);
+    visibility: hidden;
+    margin-right: 6px;
+    white-space: nowrap;
+}
+
+.etb-dirty.show {
+    visibility: visible;
+}
+
+/* хост CodeMirror */
+
+#editor-host {
+    flex: 1;
+    min-height: 0;
+}
+
+#editor-host .cm-editor {
+    height: 100%;
+}

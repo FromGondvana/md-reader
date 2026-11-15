@@ -197,3 +197,250 @@
     font-size: 11px;
     text-align: center;
 }
+
+/* ---------- диалоги (подтверждение / ввод имени) ---------- */
+
+.dialog-overlay {
+    z-index: 80;
+}
+
+.dialog {
+    position: absolute;
+    top: 22vh;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(440px, 92vw);
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-lg);
+    padding: 18px 20px 16px;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+}
+
+.dialog-overlay.open .dialog {
+    opacity: 1;
+}
+
+.dialog--mask {
+    width: min(560px, 94vw);
+}
+
+.dialog-title {
+    font-size: 15px;
+    font-weight: 650;
+    margin-bottom: 12px;
+}
+
+.dialog-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin: -6px 0 12px;
+}
+
+.dialog-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-faint);
+    margin: 12px 0 5px;
+}
+
+.dialog-input,
+.dialog-textarea,
+.dialog-select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    padding: 8px 10px;
+    outline: none;
+}
+
+.dialog-input:focus,
+.dialog-textarea:focus {
+    border-color: var(--accent);
+}
+
+.dialog-textarea {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    min-height: 64px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.btn-dialog {
+    border: 1px solid var(--border);
+    background: var(--bg-elev);
+    color: var(--text-dim);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font: inherit;
+    font-size: 12.5px;
+    cursor: pointer;
+}
+
+.btn-dialog:hover {
+    background: var(--bg-hover);
+    color: var(--text);
+}
+
+.btn-dialog.btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-dialog.btn-primary:hover {
+    filter: brightness(1.08);
+}
+
+.btn-dialog.btn-danger {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-dialog.btn-danger:hover {
+    filter: brightness(1.08);
+}
+
+/* ---------- оверлей масок ---------- */
+
+.palette--masks {
+    width: min(560px, 94vw);
+}
+
+.masks-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    flex: none;
+}
+
+.masks-title {
+    font-weight: 650;
+    font-size: 14px;
+}
+
+.masks-list {
+    overflow-y: auto;
+    padding: 8px;
+    flex: 1;
+}
+
+.mask-item {
+    padding: 9px 12px;
+    border-radius: 9px;
+    cursor: default;
+    border: 1px solid transparent;
+}
+
+.mask-item:hover {
+    background: var(--bg-hover);
+}
+
+.mask-item.active {
+    background: var(--accent-soft);
+}
+
+.mask-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.mask-name {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text);
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.mask-name svg {
+    width: 13px;
+    height: 13px;
+    color: var(--text-faint);
+    flex: none;
+}
+
+.mask-item.active .mask-name svg {
+    color: var(--accent);
+}
+
+.mask-sort {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-right: 8px;
+    white-space: nowrap;
+}
+
+.mask-rules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.mask-rules code {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    background: var(--bg-code);
+    color: var(--text-dim);
+    padding: 2px 6px;
+    border-radius: 5px;
+}
+
+.mask-norules {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-style: italic;
+}
+
+/* бейдж «недавно» и звезда в палитре файлов */
+
+.pal-badge {
+    font-size: 9.5px;
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0 4px;
+    margin-left: 6px;
+    vertical-align: 1px;
+}
+
+.pal-fav {
+    display: inline-flex;
+    margin-left: 6px;
+    vertical-align: -1px;
+}
+
+.pal-fav svg {
+    width: 12px;
+    height: 12px;
+    fill: #e8b93c;
+    stroke: #e8b93c;
+}

@@ -1,6 +1,8 @@
 import { go, errMsg } from "./api";
-import { rootName, saveSettings, state } from "./state";
+import { rootName, saveSettings, state, treeOptsJson } from "./state";
 import { toast } from "./ui/toast";
+import { updateTreeHeader } from "./ui/masks";
+import { syncTopbarActions } from "./editor/editor";
 import { renderTree } from "./ui/tree";
 import { openFile } from "./ui/viewer";
 import { hideWelcome, setProjectName, showNoFiles, showWelcome } from "./ui/welcome";
@@ -30,7 +32,7 @@ export async function pickAndOpenProject(): Promise<void> {
 export async function openProject(root: string, openRel?: string): Promise<boolean> {
     let tree: FileNode;
     try {
-        tree = await go().LoadTree(root);
+        tree = await go().LoadTree(root, treeOptsJson());
     } catch (e) {
         toast(`Папка недоступна: ${errMsg(e)}`);
         return false;
@@ -41,6 +43,7 @@ export async function openProject(root: string, openRel?: string): Promise<boole
     flattenFiles(tree);
     state.expanded = new Set(["", ...(state.settings?.expanded?.[root] ?? [])]);
     state.current = null;
+    syncTopbarActions();
     state.history = [];
     state.historyIdx = -1;
     void go()
@@ -52,6 +55,7 @@ export async function openProject(root: string, openRel?: string): Promise<boole
     s.recentRoots = [root, ...(s.recentRoots ?? []).filter((r) => r !== root)].slice(0, 8);
     saveSettings();
     setProjectName(state.projectName);
+    updateTreeHeader();
     renderTree();
     hideWelcome();
 
@@ -100,7 +104,7 @@ export async function refreshAll(): Promise<void> {
         await openFile(cur, { push: false, keepScroll: true });
     }
     try {
-        const tree = await go().LoadTree(state.root);
+        const tree = await go().LoadTree(state.root, treeOptsJson());
         state.tree = tree;
         flattenFiles(tree);
         renderTree();

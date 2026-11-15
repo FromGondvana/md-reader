@@ -20,6 +20,7 @@ export namespace main {
 	    name: string;
 	    path: string;
 	    isDir: boolean;
+	    modifiedAt?: number;
 	    children?: FileNode[];
 	
 	    static createFrom(source: any = {}) {
@@ -31,6 +32,7 @@ export namespace main {
 	        this.name = source["name"];
 	        this.path = source["path"];
 	        this.isDir = source["isDir"];
+	        this.modifiedAt = source["modifiedAt"];
 	        this.children = this.convertValues(source["children"], FileNode);
 	    }
 	

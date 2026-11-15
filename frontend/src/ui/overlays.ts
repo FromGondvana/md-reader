@@ -1,11 +1,12 @@
 import { go, errMsg } from "../api";
-import { state } from "../state";
+import { state, favorites } from "../state";
 import type { SearchAllResult } from "../types";
 import { fileName } from "../markdown/links";
 import { highlightQuery, jumpToLine, openFile, readerEl } from "./viewer";
 import { icons } from "./icons";
 import { escHtml } from "./util";
 import { toast } from "./toast";
+import { closeMasks } from "./masks";
 
 /* ================= Ctrl+P — быстрый переход к файлу ================= */
 
@@ -84,21 +85,37 @@ function updatePalette(q: string): void {
         let files: string[];
         if (!q.trim()) {
             const recents = state.settings?.recents[state.root] ?? [];
-            const all = await go().SearchFiles(state.root, "").catch(() => []);
-            files = [...recents, ...all.filter((f) => !recents.includes(f))].slice(0, 50);
+            const favs = favorites().filter((f) => !recents.includes(f));
+            // state.files уже отфильтрован активной маской
+            const all = state.files;
+            files = [...recents, ...favs, ...all.filter((f) => !recents.includes(f) && !favs.includes(f))].slice(0, 50);
+            palFavs = new Set(favs);
+            palRecents = new Set(recents);
         } else {
-            files = await go().SearchFiles(state.root, q).catch(() => []);
+            files = (await go().SearchFiles(state.root, q).catch(() => [] as string[]))
+                .filter((f) => state.fileSet.has(f)); // маска действует и на поиск по имени
+            palFavs = new Set();
+            palRecents = new Set();
         }
         renderPalList(files, q.trim());
     }, 120);
 }
 
+let palFavs = new Set<string>();
+let palRecents = new Set<string>();
+
 function renderPalList(files: string[], q: string): void {
     palItems = files.map((f) => {
         const el = document.createElement("div");
         el.className = "pal-item";
+        const mark =
+            palFavs.has(f) && !q
+                ? `<span class="pal-fav">${icons.star}</span>`
+                : palRecents.has(f) && !q
+                  ? `<span class="pal-badge">недавно</span>`
+                  : "";
         el.innerHTML =
-            `<div class="pal-name">${markMatch(fileName(f), q)}</div>` +
+            `<div class="pal-name">${markMatch(fileName(f), q)}${mark}</div>` +
             `<div class="pal-path">${escHtml(f)}</div>`;
         el.addEventListener("click", () => {
             closePalette();
@@ -273,6 +290,7 @@ async function openHit(path: string, line: number, q: string): Promise<void> {
 export function closeAllOverlays(): void {
     closePalette();
     closeSearch();
+    closeMasks();
 }
 
 /** Открыт ли какой-нибудь оверлей. */

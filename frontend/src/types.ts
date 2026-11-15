@@ -3,7 +3,25 @@ export interface FileNode {
     /** Относительный путь от корня проекта, разделитель «/» */
     path: string;
     isDir: boolean;
+    /** Дата изменения (мс) — для сортировки «по дате» */
+    modifiedAt?: number;
     children?: FileNode[];
+}
+
+/** Режим сортировки дерева. */
+export type SortMode = "name" | "name-desc" | "modified";
+
+/**
+ * Именованная маска: glob-правила фильтрации дерева.
+ * Правило без «/» сверяется с именем на любой глубине («drafts»),
+ * с «/» — с путём от корня («docs/**»). `**` — любое число сегментов.
+ */
+export interface Mask {
+    name: string;
+    /** пусто = показывать всё (кроме exclude) */
+    include: string[];
+    exclude: string[];
+    sort: SortMode;
 }
 
 export interface FileContent {
@@ -43,6 +61,14 @@ export interface Settings {
     recents: Record<string, string[]>;
     /** проект → развёрнутые папки дерева */
     expanded: Record<string, string[]>;
+    /** проект → именованные маски фильтрации */
+    masks: Record<string, Mask[]>;
+    /** проект → имя активной маски ("" или нет записи = все файлы) */
+    activeMask: Record<string, string>;
+    /** проект → сортировка дерева без маски */
+    sorts: Record<string, SortMode>;
+    /** проект → избранные файлы */
+    favorites: Record<string, string[]>;
     sidebarWidth: number;
     sidebarHidden: boolean;
     tocHidden: boolean;
@@ -57,6 +83,10 @@ export function defaultSettings(): Settings {
         lastFiles: {},
         recents: {},
         expanded: {},
+        masks: {},
+        activeMask: {},
+        sorts: {},
+        favorites: {},
         sidebarWidth: 280,
         sidebarHidden: false,
         tocHidden: false,

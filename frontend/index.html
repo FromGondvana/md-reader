@@ -15,6 +15,8 @@
         </button>
         <div id="breadcrumb"></div>
         <div class="tb-spacer"></div>
+        <button id="btn-edit" class="tb-action" title="Редактировать (Ctrl+E)" disabled></button>
+        <button id="btn-export" class="tb-action" title="Экспорт в HTML / PDF" disabled></button>
         <button id="btn-palette" class="tb-action" title="Быстрый переход к файлу (Ctrl+P)"></button>
         <button id="btn-search" class="tb-action" title="Поиск по всем файлам (Ctrl+Shift+F)"></button>
         <button id="btn-tree" class="icon-btn" title="Дерево файлов (Ctrl+B)"></button>
@@ -23,12 +25,22 @@
     </header>
     <div id="main">
         <aside id="sidebar">
+            <div id="tree-toolbar">
+                <button id="btn-newfile" class="icon-btn" title="Новый файл (в корне проекта)"></button>
+                <button id="btn-sort" class="tt-sort" title="Сортировка"></button>
+                <span class="tt-spacer"></span>
+                <button id="btn-masks" class="tt-mask" title="Маски фильтрации"></button>
+            </div>
             <div id="tree"></div>
         </aside>
         <div id="divider"></div>
         <main id="content">
             <div id="welcome" class="hidden"></div>
             <article id="reader"></article>
+            <div id="editor-root" class="hidden">
+                <div id="editor-toolbar"></div>
+                <div id="editor-host"></div>
+            </div>
         </main>
         <aside id="toc-panel" class="hidden">
             <div id="toc-title">На этой странице</div>

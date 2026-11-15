@@ -1,5 +1,6 @@
 // Генератор иконки MD Reader: 512×512 PNG, чистый Node (zlib), без зависимостей.
-// Скруглённый квадрат с градиентом + белый глиф «M↓» (логотип Markdown).
+// Скруглённый квадрат с тёмным «чернильным» градиентом + глиф «M↓» (логотип Markdown)
+// с изумрудно-циановым градиентом.
 import { deflateSync } from "node:zlib";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -56,8 +57,10 @@ const mix = (c1, c2, t) => [
     Math.round(lerp(c1[1], c2[1], t)),
     Math.round(lerp(c1[2], c2[2], t)),
 ];
-const C1 = [79, 70, 229];  // #4F46E5 индиго
-const C2 = [139, 92, 246]; // #8B5CF6 фиолетовый
+const C1 = [15, 23, 42];   // #0F172A чернильный (верх диагонали)
+const C2 = [30, 41, 59];   // #1E293B тёмный сланец (низ диагонали)
+const G1 = [52, 211, 153]; // #34D399 изумруд (верх глифа)
+const G2 = [34, 211, 238]; // #22D3EE циан (низ глифа)
 
 const rgba = Buffer.alloc(S * S * 4);
 const STROKE = 34 / 2; // полутолщина линий
@@ -89,11 +92,13 @@ for (let y = 0; y < S; y++) {
         rgba[i + 2] = Math.round(lerp(0, b, bgA));
         rgba[i + 3] = Math.round(bgA * 255);
 
-        // белый глиф поверх
+        // градиентный глиф поверх
         if (a > 0) {
-            rgba[i] = Math.round(lerp(rgba[i], 255, a));
-            rgba[i + 1] = Math.round(lerp(rgba[i + 1], 255, a));
-            rgba[i + 2] = Math.round(lerp(rgba[i + 2], 255, a));
+            const gt = Math.max(0, Math.min(1, (y + 0.5) / S));
+            const [gr, gg, gb] = mix(G1, G2, gt);
+            rgba[i] = Math.round(lerp(rgba[i], gr, a));
+            rgba[i + 1] = Math.round(lerp(rgba[i + 1], gg, a));
+            rgba[i + 2] = Math.round(lerp(rgba[i + 2], gb, a));
         }
     }
 }

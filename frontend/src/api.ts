@@ -3,7 +3,7 @@ import type { FileContent, FileNode, SearchAllResult } from "./types";
 /** Типизированный доступ к Go-привязкам Wails (window.go.main.App). */
 interface GoApp {
     ChooseFolder(title: string): Promise<string>;
-    LoadTree(root: string): Promise<FileNode>;
+    LoadTree(root: string, optsJson: string): Promise<FileNode>;
     ReadFile(root: string, rel: string): Promise<FileContent>;
     ReadFileBase64(root: string, rel: string): Promise<string>;
     SearchAll(root: string, query: string): Promise<SearchAllResult>;
@@ -15,6 +15,14 @@ interface GoApp {
     OpenExternal(url: string): Promise<void>;
     SetWindowTitle(title: string): Promise<void>;
     TakeStartupFile(): Promise<string>;
+    // ---- редактирование ----
+    WriteFile(root: string, rel: string, content: string): Promise<void>;
+    CreateFile(root: string, rel: string): Promise<void>;
+    CreateFolder(root: string, rel: string): Promise<void>;
+    RenameEntry(root: string, rel: string, newName: string): Promise<void>;
+    DeleteEntry(root: string, rel: string): Promise<void>;
+    // ---- экспорт ----
+    ExportHTML(fileName: string, html: string): Promise<string>;
 }
 
 declare global {

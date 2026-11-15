@@ -7,6 +7,7 @@ import { ensureExpanded, renderTree } from "./tree";
 import { toast } from "./toast";
 import { icons } from "./icons";
 import { renderBreadcrumb, updateNavButtons } from "./layout";
+import { editorActive, exitEditor, syncTopbarActions } from "../editor/editor";
 import type { FileContent } from "../types";
 
 export const contentEl = document.getElementById("content")!;
@@ -23,6 +24,8 @@ export interface OpenOpts {
 /** Открывает md-файл: читает, рендерит, обновляет дерево/оглавление/историю. */
 export async function openFile(path: string, opts: OpenOpts = {}): Promise<void> {
     if (!state.root) return;
+    // открыт редактор? закрываем (с подтверждением, если есть правки)
+    if (editorActive() && !(await exitEditor({ rerender: false }))) return;
     const prevScroll = contentEl.scrollTop;
     let fc: FileContent;
     try {
@@ -32,6 +35,7 @@ export async function openFile(path: string, opts: OpenOpts = {}): Promise<void>
         return;
     }
     state.current = path;
+    syncTopbarActions();
     readerEl.innerHTML = renderMarkdown(fc.content);
     decorate(path);
     buildToc(readerEl);

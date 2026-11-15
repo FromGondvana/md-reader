@@ -4,15 +4,25 @@ import {main} from '../models';
 
 export function ChooseFolder(arg1:string):Promise<string>;
 
+export function CreateFile(arg1:string,arg2:string):Promise<void>;
+
+export function CreateFolder(arg1:string,arg2:string):Promise<void>;
+
+export function DeleteEntry(arg1:string,arg2:string):Promise<void>;
+
+export function ExportHTML(arg1:string,arg2:string):Promise<string>;
+
 export function GetSettings():Promise<string>;
 
-export function LoadTree(arg1:string):Promise<main.FileNode>;
+export function LoadTree(arg1:string,arg2:string):Promise<main.FileNode>;
 
 export function OpenExternal(arg1:string):Promise<void>;
 
 export function ReadFile(arg1:string,arg2:string):Promise<main.FileContent>;
 
 export function ReadFileBase64(arg1:string,arg2:string):Promise<string>;
+
+export function RenameEntry(arg1:string,arg2:string,arg3:string):Promise<void>;
 
 export function SaveSettings(arg1:string):Promise<void>;
 
@@ -27,3 +37,5 @@ export function StartWatch(arg1:string):Promise<void>;
 export function StopWatch():Promise<void>;
 
 export function TakeStartupFile():Promise<string>;
+
+export function WriteFile(arg1:string,arg2:string,arg3:string):Promise<void>;

@@ -9,21 +9,33 @@ import "./styles/vars.css";
 import "./styles/layout.css";
 import "./styles/tree.css";
 import "./styles/viewer.css";
+import "./styles/editor.css";
 import "./styles/overlays.css";
 import "./styles/toc.css";
 import "./styles/toast.css";
 
 import { errMsg, go, rt } from "./api";
-import { loadSettings, saveSettings, state } from "./state";
+import { loadSettings, saveSettings, state, treeOptsJson } from "./state";
 import { toast } from "./ui/toast";
 import { icons } from "./ui/icons";
-import { renderTree } from "./ui/tree";
+import { renderTree, newFileAtRoot } from "./ui/tree";
 import { openFile } from "./ui/viewer";
 import { setProjectName, showNoFiles, showWelcome } from "./ui/welcome";
 import { closeAllOverlays, openPalette, openSearch } from "./ui/overlays";
+import { cycleSort, openMasks } from "./ui/masks";
+import { exportCurrent, setExportIcon } from "./ui/export";
+import {
+    applyEditorAction,
+    editorActive,
+    saveEditor,
+    setExitHook,
+    syncEditButton,
+    toggleEditor,
+} from "./editor/editor";
 import { goBack, goForward } from "./ui/history";
 import { setNavIcons, wireResizer } from "./ui/layout";
 import { toggleTocPanel } from "./ui/toc";
+import { buildEditorToolbar } from "./editor/editor";
 import { flattenFiles, openProject, pickAndOpenProject, refreshAll } from "./project";
 
 async function boot(): Promise<void> {
@@ -42,6 +54,12 @@ async function boot(): Promise<void> {
     wireWatch();
     wireDrop();
     wireOpenRequests();
+    buildEditorToolbar();
+    setExportIcon();
+    setExitHook(() => {
+        // выход из редактора → перерисовать ридер текущего файла
+        if (state.current) void openFile(state.current, { push: false });
+    });
 
     // файл из аргументов запуска («открыть с помощью»)
     let startupRoot = "";
@@ -87,6 +105,11 @@ function wireTopbar(): void {
     btn("btn-search").addEventListener("click", openSearch);
     btn("btn-tree").addEventListener("click", toggleSidebar);
     btn("btn-toc").addEventListener("click", toggleTocPanel);
+    btn("btn-edit").addEventListener("click", () => void toggleEditor());
+    btn("btn-export").addEventListener("click", () => void exportCurrent());
+    btn("btn-newfile").addEventListener("click", () => void newFileAtRoot());
+    btn("btn-sort").addEventListener("click", () => void cycleSort());
+    btn("btn-masks").addEventListener("click", openMasks);
     btnTheme.addEventListener("click", () => {
         const s = state.settings!;
         s.theme = s.theme === "dark" ? "light" : "dark";
@@ -98,6 +121,9 @@ function wireTopbar(): void {
     btn("btn-search").innerHTML = `${icons.search}<span>Поиск</span>`;
     btn("btn-tree").innerHTML = icons.panelLeft;
     btn("btn-toc").innerHTML = icons.list;
+    btn("btn-sort").innerHTML = `${icons.sort}<span>по имени</span>`;
+    btn("btn-masks").innerHTML = `${icons.funnel}<span>Все файлы</span>`;
+    syncEditButton();
     syncThemeIcon();
 }
 
@@ -129,15 +155,25 @@ function wireKeyboard(): void {
         } else if (mod && e.shiftKey && e.code === "KeyF") {
             e.preventDefault();
             openSearch();
+        } else if (mod && e.code === "KeyE") {
+            e.preventDefault();
+            void toggleEditor();
+        } else if (mod && e.code === "KeyS") {
+            e.preventDefault();
+            if (editorActive()) void saveEditor();
+        } else if (mod && e.code === "KeyI" && editorActive()) {
+            e.preventDefault();
+            applyEditorAction("italic");
+        } else if (mod && e.code === "KeyB") {
+            e.preventDefault();
+            if (editorActive()) applyEditorAction("bold");
+            else toggleSidebar();
         } else if (e.altKey && e.key === "ArrowLeft") {
             e.preventDefault();
             goBack();
         } else if (e.altKey && e.key === "ArrowRight") {
             e.preventDefault();
             goForward();
-        } else if (mod && e.code === "KeyB") {
-            e.preventDefault();
-            toggleSidebar();
         } else if (e.key === "F5") {
             e.preventDefault();
             void refreshAll();
@@ -185,13 +221,16 @@ async function refreshAfterChange(): Promise<void> {
     if (!state.root) return;
     const cur = state.current;
     try {
-        const tree = await go().LoadTree(state.root);
+        const tree = await go().LoadTree(state.root, treeOptsJson());
         state.tree = tree;
         flattenFiles(tree);
         renderTree();
     } catch {
         return;
     }
+    // файл открыт в редакторе — не перечитываем его под руками пользователя,
+    // иначе правки будут затёрты (свой WriteFile игнорируется guard'ом выше)
+    if (editorActive()) return;
     if (!cur) return;
     if (state.fileSet.has(cur)) {
         await openFile(cur, { push: false, keepScroll: true });
@@ -226,7 +265,7 @@ function wireDrop(): void {
 
 async function handleDroppedPath(p: string): Promise<void> {
     try {
-        await go().LoadTree(p); // папка?
+        await go().LoadTree(p, ""); // папка?
         await openProject(p);
         return;
     } catch {

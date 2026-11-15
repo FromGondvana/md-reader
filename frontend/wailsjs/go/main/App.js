@@ -6,12 +6,28 @@ export function ChooseFolder(arg1) {
   return window['go']['main']['App']['ChooseFolder'](arg1);
 }
 
+export function CreateFile(arg1, arg2) {
+  return window['go']['main']['App']['CreateFile'](arg1, arg2);
+}
+
+export function CreateFolder(arg1, arg2) {
+  return window['go']['main']['App']['CreateFolder'](arg1, arg2);
+}
+
+export function DeleteEntry(arg1, arg2) {
+  return window['go']['main']['App']['DeleteEntry'](arg1, arg2);
+}
+
+export function ExportHTML(arg1, arg2) {
+  return window['go']['main']['App']['ExportHTML'](arg1, arg2);
+}
+
 export function GetSettings() {
   return window['go']['main']['App']['GetSettings']();
 }
 
-export function LoadTree(arg1) {
-  return window['go']['main']['App']['LoadTree'](arg1);
+export function LoadTree(arg1, arg2) {
+  return window['go']['main']['App']['LoadTree'](arg1, arg2);
 }
 
 export function OpenExternal(arg1) {
@@ -24,6 +40,10 @@ export function ReadFile(arg1, arg2) {
 
 export function ReadFileBase64(arg1, arg2) {
   return window['go']['main']['App']['ReadFileBase64'](arg1, arg2);
+}
+
+export function RenameEntry(arg1, arg2, arg3) {
+  return window['go']['main']['App']['RenameEntry'](arg1, arg2, arg3);
 }
 
 export function SaveSettings(arg1) {
@@ -52,4 +72,8 @@ export function StopWatch() {
 
 export function TakeStartupFile() {
   return window['go']['main']['App']['TakeStartupFile']();
+}
+
+export function WriteFile(arg1, arg2, arg3) {
+  return window['go']['main']['App']['WriteFile'](arg1, arg2, arg3);
 }
